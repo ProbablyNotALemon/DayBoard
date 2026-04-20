@@ -1,0 +1,8 @@
+{
+  "name": "DayBoard",
+  "short_name": "DayBoard",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f2f4f7",
+  "theme_color": "#ffffff"
+}

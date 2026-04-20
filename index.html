@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DayBoard</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="grid">
+
+  <div class="tile clock">
+    <div id="time">--:--</div>
+    <div id="date">Loading...</div>
+  </div>
+
+  <div class="tile weather">
+    <div class="title">Weather</div>
+    <div id="weather">Loading weather...</div>
+  </div>
+
+  <div class="tile reminders">
+    <div class="title">Reminders</div>
+    <ul id="reminderList"></ul>
+    <input id="reminderInput" placeholder="Add reminder..." />
+  </div>
+
+  <div class="tile battery">
+    <div class="title">Battery</div>
+    <div id="battery">--%</div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
