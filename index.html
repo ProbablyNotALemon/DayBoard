@@ -12,40 +12,66 @@
 
   <aside class="sidebar">
     <div class="timeSmall" id="timeSmall"></div>
-    <div class="menu active">Home</div>
-    <div class="menu">Weather</div>
-    <div class="menu">Reminders</div>
-    <div class="menu">Notes</div>
-    <div class="menu">Settings</div>
+    <div class="menu active" data-page="home">Home</div>
+    <div class="menu" data-page="weather">Weather</div>
+    <div class="menu" data-page="reminders">Reminders</div>
+    <div class="menu" data-page="notes">Notes</div>
+    <div class="menu" data-page="settings">Settings</div>
   </aside>
 
   <main class="content">
 
-    <div class="card clock" id="clockCard">
-      <div id="time">--:--</div>
-      <div id="date"></div>
-    </div>
-
-    <div class="card reminders">
-      <h3>Reminders</h3>
-      <ul id="reminderList"></ul>
-      <input id="reminderInput" placeholder="Add reminder...">
-    </div>
-
-    <div class="card notes">
-      <h3>Notes</h3>
-      <textarea placeholder="Tap to write something down..."></textarea>
-    </div>
-
-    <div class="card quicklinks">
-      <h3>Quick Links</h3>
-      <div class="links">
-        <a href="https://google.com">Google</a>
-        <a href="https://youtube.com">YouTube</a>
-        <a href="https://drive.google.com">Drive</a>
-        <a href="#">Add</a>
+    <!-- HOME -->
+    <section class="page active" id="home">
+      <div class="card clock" id="clockCard">
+        <div id="time">--:--</div>
+        <div id="date"></div>
       </div>
-    </div>
+
+      <div class="card preview">
+        <h3>Weather</h3>
+        <div id="weatherPreview">Loading...</div>
+      </div>
+
+      <div class="card preview">
+        <h3>Reminders</h3>
+        <div id="reminderPreview">No reminders</div>
+      </div>
+    </section>
+
+    <!-- WEATHER -->
+    <section class="page" id="weather">
+      <div class="card big">
+        <h2>Current Weather</h2>
+        <div id="weatherBig">Loading weather...</div>
+      </div>
+    </section>
+
+    <!-- REMINDERS -->
+    <section class="page" id="reminders">
+      <div class="card big">
+        <h2>Reminders</h2>
+        <ul id="reminderList"></ul>
+        <input id="reminderInput" placeholder="Add reminder and press Enter">
+      </div>
+    </section>
+
+    <!-- NOTES -->
+    <section class="page" id="notes">
+      <div class="card big">
+        <h2>Notes</h2>
+        <textarea id="notesArea" placeholder="Write notes..."></textarea>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="page" id="settings">
+      <div class="card big">
+        <h2>Settings</h2>
+        <p>DayBoard Smart Display</p>
+        <p>Tap the clock on Home to enter lock screen.</p>
+      </div>
+    </section>
 
   </main>
 </div>
