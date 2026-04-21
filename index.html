@@ -3,102 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f3ede2">
 <title>DayBoard</title>
-
-<link rel="stylesheet" href="./style.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css?v=2">
 </head>
-
 <body>
+  <div class="app-shell">
+    <div class="backdrop backdrop-one" aria-hidden="true"></div>
+    <div class="backdrop backdrop-two" aria-hidden="true"></div>
 
-<div class="app">
+    <div class="app">
+      <aside class="sidebar" aria-label="Primary">
+        <div class="sidebar-top">
+          <p class="eyebrow">DayBoard</p>
+          <div id="timeSmall" class="sidebar-time"></div>
+          <p class="sidebar-date-label">Your calm daily board</p>
+        </div>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div id="timeSmall"></div>
+        <nav class="menu-list">
+          <button class="menu active" data-page="home" type="button">
+            <span class="menu-label">Home</span>
+            <span class="menu-hint">Overview</span>
+          </button>
+          <button class="menu" data-page="weather" type="button">
+            <span class="menu-label">Weather</span>
+            <span class="menu-hint">Conditions</span>
+          </button>
+          <button class="menu" data-page="reminders" type="button">
+            <span class="menu-label">Reminders</span>
+            <span class="menu-hint">Stay on track</span>
+          </button>
+          <button class="menu" data-page="notes" type="button">
+            <span class="menu-label">Notes</span>
+            <span class="menu-hint">Capture ideas</span>
+          </button>
+          <button class="menu" data-page="settings" type="button">
+            <span class="menu-label">Settings</span>
+            <span class="menu-hint">Personalize</span>
+          </button>
+        </nav>
+      </aside>
 
-    <div class="menu active" data-page="home">Home</div>
-    <div class="menu" data-page="weather">Weather</div>
-    <div class="menu" data-page="reminders">Reminders</div>
-    <div class="menu" data-page="notes">Notes</div>
-    <div class="menu" data-page="settings">Settings</div>
-  </aside>
+      <main class="content">
+        <section class="page active" id="home" aria-labelledby="homeTitle">
+          <header class="hero-panel">
+            <div class="hero-copy">
+              <p class="eyebrow">Today</p>
+              <h1 id="homeTitle">Everything you need, at a glance.</h1>
+              <p class="hero-text">A lightweight dashboard for the time, weather, reminders, and quick thoughts that matter most.</p>
+            </div>
 
-  <!-- MAIN -->
-  <main class="content">
+            <button class="clock-card" id="clockCard" type="button" aria-label="Open lock screen">
+              <div id="time" class="hero-time"></div>
+              <div id="date" class="hero-date"></div>
+              <span class="clock-cta">Tap for lock view</span>
+            </button>
+          </header>
 
-    <!-- HOME -->
-    <section class="page active" id="home">
+          <section class="summary-grid" aria-label="Summary">
+            <article class="card accent-card">
+              <div class="card-header">
+                <p class="eyebrow">Live weather</p>
+                <h2>Forecast</h2>
+              </div>
+              <p id="weatherPreview" class="card-value">Loading weather...</p>
+              <p id="weatherMeta" class="card-meta">Waiting for location permission.</p>
+            </article>
 
-      <div class="clock" id="clockCard">
-        <div id="time"></div>
-        <div id="date"></div>
-      </div>
+            <article class="card">
+              <div class="card-header">
+                <p class="eyebrow">Up next</p>
+                <h2>Reminders</h2>
+              </div>
+              <p id="reminderPreview" class="card-value">No reminders yet</p>
+              <p id="reminderCount" class="card-meta">Add one below to get started.</p>
+            </article>
 
-      <div class="card">
-        <h3>Weather</h3>
-        <div id="weatherPreview">Loading...</div>
-      </div>
+            <article class="card notes-preview-card">
+              <div class="card-header">
+                <p class="eyebrow">Quick capture</p>
+                <h2>Notes snapshot</h2>
+              </div>
+              <p id="notesPreview" class="card-copy">Your latest notes will appear here.</p>
+            </article>
+          </section>
+        </section>
 
-      <div class="card">
-        <h3>Reminders</h3>
-        <div id="reminderPreview">No reminders</div>
-      </div>
+        <section class="page" id="weather" aria-labelledby="weatherTitle">
+          <article class="card page-card">
+            <div class="card-header">
+              <p class="eyebrow">Forecast</p>
+              <h2 id="weatherTitle">Weather</h2>
+            </div>
+            <p id="weatherText" class="page-lead">Loading weather...</p>
+            <p id="weatherStatus" class="card-meta">We use your current location for a local forecast.</p>
+          </article>
+        </section>
 
-    </section>
+        <section class="page" id="reminders" aria-labelledby="remindersTitle">
+          <article class="card page-card">
+            <div class="card-header">
+              <p class="eyebrow">Focus list</p>
+              <h2 id="remindersTitle">Reminders</h2>
+            </div>
 
-    <!-- WEATHER -->
-    <section class="page" id="weather">
-      <div class="card big">
-        <h2>Weather</h2>
-        <div id="weatherText">Loading...</div>
-      </div>
-    </section>
+            <label class="field-label" for="reminderInput">Add a reminder</label>
+            <input id="reminderInput" type="text" maxlength="120" placeholder="Type a reminder and press Enter">
 
-    <!-- REMINDERS -->
-    <section class="page" id="reminders">
-      <div class="card big">
-        <h2>Reminders</h2>
-        <ul id="reminderList"></ul>
-        <input id="reminderInput" placeholder="Add reminder + Enter">
-      </div>
-    </section>
+            <ul id="reminderList" class="reminder-list" aria-live="polite"></ul>
+          </article>
+        </section>
 
-    <!-- NOTES -->
-    <section class="page" id="notes">
-      <div class="card big">
-        <h2>Notes</h2>
-        <textarea id="notesArea"></textarea>
-        <button id="clearNotes">Clear Notes</button>
-      </div>
-    </section>
+        <section class="page" id="notes" aria-labelledby="notesTitle">
+          <article class="card page-card">
+            <div class="card-header">
+              <p class="eyebrow">Freeform</p>
+              <h2 id="notesTitle">Notes</h2>
+            </div>
+            <label class="field-label" for="notesArea">Daily notes</label>
+            <textarea id="notesArea" placeholder="Write down ideas, plans, or loose thoughts..."></textarea>
+            <div class="actions">
+              <button id="clearNotes" class="secondary-button" type="button">Clear notes</button>
+            </div>
+          </article>
+        </section>
 
-    <!-- SETTINGS -->
-    <section class="page" id="settings">
-      <div class="card big">
-        <h2>Settings</h2>
+        <section class="page" id="settings" aria-labelledby="settingsTitle">
+          <article class="card page-card">
+            <div class="card-header">
+              <p class="eyebrow">Preferences</p>
+              <h2 id="settingsTitle">Settings</h2>
+            </div>
 
-        <label>Screen saver delay (minutes)</label>
-        <input type="number" id="ssTime" value="2" min="1" max="30">
+            <label class="field-label" for="ssTime">Screen saver delay</label>
+            <div class="settings-row">
+              <input type="range" id="ssTime" value="2" min="1" max="30">
+              <span id="ssValue" class="settings-value">2 min</span>
+            </div>
+            <p class="card-meta">The screen saver appears after inactivity. Touch anywhere to return.</p>
+          </article>
+        </section>
+      </main>
+    </div>
+  </div>
 
-      </div>
-    </section>
+  <div id="lockScreen" class="overlay lock hidden" role="dialog" aria-modal="true" aria-label="Lock screen">
+    <div class="overlay-panel">
+      <div id="lockTime" class="overlay-time"></div>
+      <div id="lockDate" class="overlay-date"></div>
+      <p class="overlay-hint">Tap anywhere to unlock</p>
+    </div>
+  </div>
 
-  </main>
-</div>
+  <div id="screensaver" class="overlay screensaver hidden" aria-hidden="true">
+    <div class="glow glow-one"></div>
+    <div class="glow glow-two"></div>
+    <div class="overlay-panel">
+      <div id="screenTime" class="overlay-time"></div>
+      <p class="overlay-hint">Move, touch, or press a key to return</p>
+    </div>
+  </div>
 
-<!-- LOCK SCREEN -->
-<div id="lockScreen" class="lock hidden">
-  <div id="lockTime"></div>
-  <div id="lockDate"></div>
-</div>
-
-<!-- SCREENSAVER -->
-<div id="screensaver" class="screensaver hidden">
-  <div class="glow"></div>
-  <div class="glow alt"></div>
-  <div id="screenTime"></div>
-</div>
-
-<script src="script.js?v=1"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>
