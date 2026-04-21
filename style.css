@@ -2,15 +2,15 @@ body{
   margin:0;
   font-family:-apple-system;
   background:#eef3f7;
-  overflow:hidden;
 }
 
+/* layout */
 .app{
   display:flex;
   height:100vh;
 }
 
-/* SIDEBAR */
+/* sidebar */
 .sidebar{
   width:220px;
   background:#f8fbff;
@@ -27,50 +27,36 @@ body{
   font-weight:bold;
 }
 
-/* PAGES */
-.pages{
+/* pages */
+.content{
   flex:1;
-  display:flex;
-  transition:transform .4s ease;
-}
-
-.page{
-  min-width:100%;
   padding:40px;
 }
 
-/* CLOCK */
-.clock-card{
-  font-size:100px;
+.page{display:none;}
+.page.active{display:block;}
+
+/* clock */
+.clock{
+  font-size:80px;
 }
 
-/* CARDS */
+/* card */
 .card{
   background:white;
   padding:20px;
-  border-radius:20px;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
-/* WEATHER BG */
-.weather-bg{
-  position:absolute;
-  inset:0;
-  z-index:-1;
-  transition:1s;
-}
-
-/* REMINDERS */
+/* reminders */
 li{
   display:flex;
   justify-content:space-between;
   margin:10px 0;
 }
 
-button{
-  cursor:pointer;
-}
-
-/* LOCK */
+/* lock */
 .lock{
   position:fixed;
   inset:0;
@@ -79,10 +65,10 @@ button{
   flex-direction:column;
   align-items:center;
   justify-content:center;
+  font-size:80px;
 }
-.hidden{display:none;}
 
-/* SCREENSAVER */
+/* screensaver */
 .screensaver{
   position:fixed;
   inset:0;
@@ -90,19 +76,21 @@ button{
   display:flex;
   justify-content:center;
   align-items:center;
+  flex-direction:column;
 }
 
 .glow{
   position:absolute;
-  width:500px;
-  height:500px;
-  background:radial-gradient(circle,#ff8c50,transparent);
-  animation:pulse 6s infinite;
+  width:600px;
+  height:600px;
+  background:radial-gradient(circle,#ff8c50,transparent 70%);
+  filter:blur(40px);
+  animation:pulse 8s infinite;
 }
 
 @keyframes pulse{
   0%{transform:scale(1)}
-  50%{transform:scale(1.5)}
+  50%{transform:scale(1.4)}
   100%{transform:scale(1)}
 }
 
@@ -110,3 +98,6 @@ button{
   color:#ffd7b5;
   font-size:100px;
 }
+
+/* hidden */
+.hidden{display:none;}
