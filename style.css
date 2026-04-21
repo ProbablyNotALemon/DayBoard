@@ -1,122 +1,87 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f4f6f9;
-  color: #111;
-}
-
-/* LAYOUT */
-.app {
+  background: #eef2f6;
   display: flex;
-  height: 100vh;
 }
 
-/* SIDEBAR */
 .sidebar {
-  width: 70px;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 15px 0;
+  width: 200px;
+  background: #ffffff;
+  padding: 30px 20px;
   box-shadow: 2px 0 10px rgba(0,0,0,0.05);
 }
 
 .logo {
-  font-weight: bold;
-  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 40px;
 }
 
-.nav {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+.menu {
+  margin: 15px 0;
+  opacity: 0.6;
 }
 
-.nav-item {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f0f2f6;
-}
-
-.bottom {
-  margin-top: auto;
-}
-
-/* MAIN */
 .main {
   flex: 1;
-  padding: 20px;
-  overflow: auto;
+  padding: 30px;
 }
 
-.row {
+.topbar {
+  text-align: right;
+  opacity: 0.6;
+  margin-bottom: 20px;
+}
+
+.grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  margin-bottom: 15px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
 .card {
   background: white;
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  min-height: 120px;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
 
-.card h3 {
-  margin: 0 0 10px;
-  font-size: 14px;
-  opacity: 0.6;
+.large {
+  grid-column: span 2;
 }
 
 #time {
-  font-size: 48px;
+  font-size: 64px;
   font-weight: 600;
 }
 
-#weather {
-  font-size: 18px;
+#date {
+  opacity: 0.6;
 }
 
-.reminders input {
+.title {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+input {
   width: 100%;
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-}
-
-.links {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.links div {
-  background: #f0f2f6;
   padding: 10px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 13px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-top: 10px;
 }
 
 /* LOCK SCREEN */
 .lockscreen {
   position: fixed;
   inset: 0;
-  background: #f4f6f9;
+  background: #eef2f6;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  flex-direction: column;
 }
 
 .hidden {
@@ -129,6 +94,6 @@ body {
 }
 
 .lock-date {
-  font-size: 24px;
   opacity: 0.6;
+  font-size: 24px;
 }
