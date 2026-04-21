@@ -2,43 +2,97 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>DayBoard</title>
 
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="grid">
+<div class="app">
 
-  <div class="tile clock">
-    <div id="time">--:--</div>
-    <div id="date">Loading...</div>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">DB</div>
+
+    <div class="nav">
+      <div class="nav-item active">🏠</div>
+      <div class="nav-item">☰</div>
+      <div class="nav-item">📅</div>
+      <div class="nav-item">⚙️</div>
+    </div>
+
+    <div class="bottom">☀️</div>
   </div>
 
-  <div class="tile weather">
-    <div class="title">Weather</div>
-    <div id="weather">Loading weather...</div>
-  </div>
+  <!-- MAIN -->
+  <div class="main">
 
-  <div class="tile reminders">
-    <div class="title">Reminders</div>
-    <ul id="reminderList"></ul>
-    <input id="reminderInput" placeholder="Add reminder..." />
-  </div>
+    <!-- TOP ROW -->
+    <div class="row">
 
-  <div class="tile battery">
-    <div class="title">Battery</div>
-    <div id="battery">--%</div>
+      <div class="card weather">
+        <h3>Weather</h3>
+        <div id="weather">Loading...</div>
+      </div>
+
+      <div class="card clock">
+        <h3>Clock</h3>
+        <div id="time">--:--</div>
+        <div id="date"></div>
+      </div>
+
+    </div>
+
+    <!-- MIDDLE ROW -->
+    <div class="row">
+
+      <div class="card reminders">
+        <h3>Reminders</h3>
+        <ul id="reminderList"></ul>
+        <input id="reminderInput" placeholder="Add reminder..." />
+      </div>
+
+      <div class="card calendar">
+        <h3>Calendar</h3>
+        <div class="cal-item">Today</div>
+        <div class="cal-item">Nothing scheduled</div>
+      </div>
+
+      <div class="card battery">
+        <h3>Battery</h3>
+        <div id="battery">--%</div>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="row">
+
+      <div class="card notes">
+        <h3>Notes</h3>
+        <textarea placeholder="Write something..."></textarea>
+      </div>
+
+      <div class="card quicklinks">
+        <h3>Quick Links</h3>
+        <div class="links">
+          <div>Google</div>
+          <div>YouTube</div>
+          <div>Drive</div>
+          <div>Notion</div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
 </div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
