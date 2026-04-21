@@ -1,126 +1,130 @@
-// NAVIGATION (click + swipe)
-let currentPage=0;
-const pages=document.querySelector('.pages');
-const totalPages=document.querySelectorAll('.page').length;
-
-function goToPage(i){
-  currentPage=i;
-  pages.style.transform=`translateX(-${i*100}%)`;
-}
-
-// sidebar click
-document.querySelectorAll('.menu').forEach((btn,i)=>{
+// ---------- NAVIGATION ----------
+document.querySelectorAll('.menu').forEach(btn=>{
   btn.onclick=()=>{
     document.querySelectorAll('.menu').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+
     btn.classList.add('active');
-    goToPage(i);
-  }
+    document.getElementById(btn.dataset.page).classList.add('active');
+  };
 });
 
-// swipe
-let startX=0;
-document.addEventListener('touchstart',e=>startX=e.touches[0].clientX);
-document.addEventListener('touchend',e=>{
-  let dx=e.changedTouches[0].clientX-startX;
-  if(dx>50 && currentPage>0) goToPage(currentPage-1);
-  if(dx<-50 && currentPage<totalPages-1) goToPage(currentPage+1);
-});
-
-// CLOCK
+// ---------- CLOCK ----------
 function updateClock(){
-  let n=new Date();
-  let t=n.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  let d=n.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+  const now=new Date();
 
-  time.textContent=t;
-  date.textContent=d;
-  timeSmall.textContent=t;
-  lockTime.textContent=t;
-  lockDate.textContent=d;
-  screenTime.textContent=t;
+  const timeStr=now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const dateStr=now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+
+  time.textContent=timeStr;
+  date.textContent=dateStr;
+  timeSmall.textContent=timeStr;
+
+  lockTime.textContent=timeStr;
+  lockDate.textContent=dateStr;
+
+  screenTime.textContent=timeStr;
 }
 setInterval(updateClock,1000);
 updateClock();
 
-// WEATHER + ANIMATION
-navigator.geolocation.getCurrentPosition(pos=>{
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`)
-  .then(r=>r.json())
-  .then(data=>{
-    let w=data.current_weather;
-    weatherBig.textContent=`${w.temperature}°C`;
+// ---------- WEATHER ----------
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    try{
+      const {latitude,longitude}=pos.coords;
+      const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+      const data=await res.json();
 
-    // animated background
-    if(w.temperature>20){
-      weatherBg.style.background="linear-gradient(#87ceeb,#fff)";
-    } else {
-      weatherBg.style.background="linear-gradient(#4a6fa5,#222)";
+      const w=data.current_weather;
+      weatherText.textContent=`${w.temperature}°C • Wind ${w.windspeed} km/h`;
+    }catch{
+      weatherText.textContent="Weather unavailable";
     }
-  });
-});
-
-// REMINDERS (fixed delete)
-let reminders=JSON.parse(localStorage.getItem('r')||'[]');
-
-function render(){
-  reminderList.innerHTML='';
-  reminders.forEach((r,i)=>{
-    let li=document.createElement('li');
-    li.innerHTML=`${r} <button data-i="${i}">✖</button>`;
-    reminderList.appendChild(li);
-  });
-
-  document.querySelectorAll('button[data-i]').forEach(btn=>{
-    btn.onclick=()=>{
-      reminders.splice(btn.dataset.i,1);
-      localStorage.setItem('r',JSON.stringify(reminders));
-      render();
-    };
+  },()=>{
+    weatherText.textContent="Location blocked";
   });
 }
-render();
+
+// ---------- REMINDERS ----------
+let reminders=JSON.parse(localStorage.getItem('reminders')||'[]');
+
+function renderReminders(){
+  reminderList.innerHTML='';
+
+  reminders.forEach((r,i)=>{
+    const li=document.createElement('li');
+
+    const span=document.createElement('span');
+    span.textContent=r;
+
+    const btn=document.createElement('button');
+    btn.textContent='✖';
+    btn.onclick=()=>{
+      reminders.splice(i,1);
+      localStorage.setItem('reminders',JSON.stringify(reminders));
+      renderReminders();
+    };
+
+    li.appendChild(span);
+    li.appendChild(btn);
+    reminderList.appendChild(li);
+  });
+}
+renderReminders();
 
 reminderInput.onkeypress=e=>{
   if(e.key==='Enter'){
+    if(!reminderInput.value.trim()) return;
+
     reminders.push(reminderInput.value);
-    localStorage.setItem('r',JSON.stringify(reminders));
+    localStorage.setItem('reminders',JSON.stringify(reminders));
     reminderInput.value='';
-    render();
+    renderReminders();
   }
 };
 
-// NOTES
-notesArea.value=localStorage.getItem('n')||'';
-notesArea.oninput=()=>localStorage.setItem('n',notesArea.value);
+// ---------- NOTES ----------
+notesArea.value=localStorage.getItem('notes')||'';
+notesArea.oninput=()=>localStorage.setItem('notes',notesArea.value);
+
 clearNotes.onclick=()=>{
   notesArea.value='';
-  localStorage.removeItem('n');
+  localStorage.removeItem('notes');
 };
 
-// LOCK SCREEN
+// ---------- LOCK SCREEN ----------
 clockCard.onclick=()=>lockScreen.classList.remove('hidden');
 lockScreen.onclick=()=>lockScreen.classList.add('hidden');
 
-// SCREENSAVER
+// ---------- SCREENSAVER ----------
 let idleTimer;
-let delay=2;
+let delay=parseInt(localStorage.getItem('ssTime')||2);
 
-function resetIdle(){
+ssTime.value=delay;
+
+function startIdleTimer(){
   clearTimeout(idleTimer);
-  screensaver.classList.add('hidden');
-
   idleTimer=setTimeout(()=>{
     screensaver.classList.remove('hidden');
   }, delay*60000);
 }
 
-['click','touchstart','mousemove'].forEach(e=>{
-  document.addEventListener(e,resetIdle);
+function exitScreensaver(){
+  screensaver.classList.add('hidden');
+  startIdleTimer();
+}
+
+// EXIT on ANY interaction
+['mousemove','click','touchstart','keydown'].forEach(evt=>{
+  document.addEventListener(evt, exitScreensaver);
 });
 
 ssTime.oninput=()=>{
-  delay=parseInt(ssTime.value)||2;
-  resetIdle();
+  delay=Math.max(1,parseInt(ssTime.value)||2);
+  localStorage.setItem('ssTime',delay);
+  startIdleTimer();
 };
 
-resetIdle();
+// start
+startIdleTimer();
