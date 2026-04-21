@@ -1,103 +1,193 @@
+/* ---------- BASE ---------- */
 body{
   margin:0;
-  font-family:-apple-system;
-  background:#eef3f7;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+  background:linear-gradient(135deg,#eef3f7,#dfe7ef);
+  color:#111;
 }
 
-/* layout */
+/* ---------- LAYOUT ---------- */
 .app{
   display:flex;
   height:100vh;
 }
 
-/* sidebar */
+/* ---------- SIDEBAR ---------- */
 .sidebar{
   width:220px;
-  background:#f8fbff;
-  padding:20px;
+  background:rgba(255,255,255,0.6);
+  backdrop-filter:blur(20px);
+  padding:25px;
+  border-right:1px solid rgba(0,0,0,0.05);
 }
 
+#timeSmall{
+  font-size:28px;
+  margin-bottom:40px;
+  font-weight:500;
+}
+
+/* menu */
 .menu{
-  margin:15px 0;
+  margin:16px 0;
+  padding:10px 14px;
+  border-radius:12px;
   cursor:pointer;
   opacity:.6;
-}
-.menu.active{
-  opacity:1;
-  font-weight:bold;
+  transition:all .2s ease;
 }
 
-/* pages */
+.menu:hover{
+  background:rgba(0,0,0,0.05);
+  opacity:1;
+}
+
+.menu.active{
+  background:white;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  opacity:1;
+  font-weight:600;
+}
+
+/* ---------- CONTENT ---------- */
 .content{
   flex:1;
   padding:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.page{display:none;}
-.page.active{display:block;}
+.page{
+  display:none;
+  width:100%;
+  max-width:900px;
+}
+.page.active{
+  display:block;
+  animation:fade .3s ease;
+}
 
-/* clock */
+@keyframes fade{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ---------- CLOCK ---------- */
 .clock{
-  font-size:80px;
+  text-align:center;
 }
 
-/* card */
+#time{
+  font-size:120px;
+  font-weight:600;
+  letter-spacing:-2px;
+}
+
+#date{
+  font-size:22px;
+  opacity:.6;
+}
+
+/* ---------- CARD ---------- */
 .card{
-  background:white;
-  padding:20px;
-  border-radius:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  background:rgba(255,255,255,0.7);
+  backdrop-filter:blur(20px);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.08);
 }
 
-/* reminders */
+/* ---------- INPUTS ---------- */
+input, textarea{
+  width:100%;
+  margin-top:15px;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  font-size:16px;
+  outline:none;
+}
+
+input:focus, textarea:focus{
+  border-color:#aaa;
+}
+
+/* ---------- REMINDERS ---------- */
 li{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   margin:10px 0;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(0,0,0,0.03);
 }
 
-/* lock */
+button{
+  border:none;
+  background:#ff6b6b;
+  color:white;
+  border-radius:8px;
+  padding:6px 10px;
+  cursor:pointer;
+}
+
+button:hover{
+  opacity:.8;
+}
+
+/* ---------- LOCK SCREEN ---------- */
 .lock{
   position:fixed;
   inset:0;
-  background:#eef3f7;
+  background:linear-gradient(#eef3f7,#dfe7ef);
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  font-size:80px;
 }
 
-/* screensaver */
+#lockTime{
+  font-size:120px;
+}
+#lockDate{
+  opacity:.6;
+}
+
+/* ---------- SCREENSAVER ---------- */
 .screensaver{
   position:fixed;
   inset:0;
   background:#0b0b0b;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
   flex-direction:column;
 }
 
+/* glowing ambient */
 .glow{
   position:absolute;
-  width:600px;
-  height:600px;
-  background:radial-gradient(circle,#ff8c50,transparent 70%);
-  filter:blur(40px);
-  animation:pulse 8s infinite;
+  width:700px;
+  height:700px;
+  background:radial-gradient(circle,#ff9a5a,transparent 70%);
+  filter:blur(80px);
+  animation:float 10s infinite ease-in-out;
 }
 
-@keyframes pulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.4)}
-  100%{transform:scale(1)}
+@keyframes float{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.5);}
+  100%{transform:scale(1);}
 }
 
 #screenTime{
+  font-size:110px;
   color:#ffd7b5;
-  font-size:100px;
+  letter-spacing:2px;
+  z-index:2;
 }
 
-/* hidden */
+/* ---------- HIDDEN ---------- */
 .hidden{display:none;}
