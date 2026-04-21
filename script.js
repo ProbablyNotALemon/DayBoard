@@ -9,17 +9,23 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// WEATHER (Open-Meteo, no key)
-navigator.geolocation.getCurrentPosition(async pos => {
-  const { latitude, longitude } = pos.coords;
-  const res = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`
-  );
-  const data = await res.json();
-  const w = data.current_weather;
-  document.getElementById('weather').textContent =
-    `${w.temperature}°C, wind ${w.windspeed} km/h`;
-});
+// WEATHER
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(async pos => {
+    try {
+      const { latitude, longitude } = pos.coords;
+      const res = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`
+      );
+      const data = await res.json();
+      const w = data.current_weather;
+      document.getElementById('weather').textContent =
+        `${w.temperature}°C, wind ${w.windspeed} km/h`;
+    } catch {
+      document.getElementById('weather').textContent = "Weather unavailable";
+    }
+  });
+}
 
 // REMINDERS
 const input = document.getElementById('reminderInput');
@@ -34,7 +40,6 @@ function loadReminders() {
     list.appendChild(li);
   });
 }
-
 input.addEventListener('keypress', e => {
   if (e.key === 'Enter') {
     const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
@@ -47,16 +52,37 @@ input.addEventListener('keypress', e => {
 loadReminders();
 
 // BATTERY
-navigator.getBattery().then(battery => {
-  function updateBattery() {
-    document.getElementById('battery').textContent =
-      Math.round(battery.level * 100) + '%';
-  }
-  updateBattery();
-  battery.addEventListener('levelchange', updateBattery);
+if (navigator.getBattery) {
+  navigator.getBattery().then(battery => {
+    function updateBattery() {
+      document.getElementById('battery').textContent =
+        Math.round(battery.level * 100) + '%';
+    }
+    updateBattery();
+    battery.addEventListener('levelchange', updateBattery);
+  });
+}
+
+// LOCK SCREEN
+const lockScreen = document.getElementById('lockScreen');
+const clockCard = document.getElementById('clockCard');
+const lockTime = document.getElementById('lockTime');
+const lockDate = document.getElementById('lockDate');
+
+function updateLockClock() {
+  const now = new Date();
+  lockTime.textContent =
+    now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  lockDate.textContent =
+    now.toLocaleDateString(undefined, {weekday:'long', month:'long', day:'numeric'});
+}
+setInterval(updateLockClock, 1000);
+updateLockClock();
+
+clockCard.addEventListener('click', () => {
+  lockScreen.classList.remove('hidden');
 });
 
-// SERVICE WORKER
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
+lockScreen.addEventListener('click', () => {
+  lockScreen.classList.add('hidden');
+});
