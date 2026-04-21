@@ -2,57 +2,55 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>DayBoard</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="sidebar">
-  <div class="logo">DayBoard</div>
-  <div class="menu">Home</div>
-  <div class="menu">Weather</div>
-  <div class="menu">Reminders</div>
-</div>
+<div class="layout">
 
-<div class="main">
+  <aside class="sidebar">
+    <div class="timeSmall" id="timeSmall"></div>
+    <div class="menu active">Home</div>
+    <div class="menu">Weather</div>
+    <div class="menu">Reminders</div>
+    <div class="menu">Notes</div>
+    <div class="menu">Settings</div>
+  </aside>
 
-  <div class="topbar">
-    <div id="timeSmall"></div>
-  </div>
+  <main class="content">
 
-  <div class="grid">
-
-    <div class="card large clock" id="clockCard">
+    <div class="card clock" id="clockCard">
       <div id="time">--:--</div>
       <div id="date"></div>
     </div>
 
-    <div class="card weather">
-      <div class="title">Weather</div>
-      <div id="weather">Loading...</div>
-    </div>
-
     <div class="card reminders">
-      <div class="title">Reminders</div>
+      <h3>Reminders</h3>
       <ul id="reminderList"></ul>
-      <input id="reminderInput" placeholder="Add reminder..." />
+      <input id="reminderInput" placeholder="Add reminder...">
     </div>
 
-    <div class="card battery">
-      <div class="title">Battery</div>
-      <div id="battery">--%</div>
+    <div class="card notes">
+      <h3>Notes</h3>
+      <textarea placeholder="Tap to write something down..."></textarea>
     </div>
 
-  </div>
+    <div class="card quicklinks">
+      <h3>Quick Links</h3>
+      <div class="links">
+        <a href="https://google.com">Google</a>
+        <a href="https://youtube.com">YouTube</a>
+        <a href="https://drive.google.com">Drive</a>
+        <a href="#">Add</a>
+      </div>
+    </div>
+
+  </main>
 </div>
 
-<!-- LOCK SCREEN -->
+<!-- Lock screen -->
 <div id="lockScreen" class="lockscreen hidden">
   <div id="lockTime" class="lock-time"></div>
   <div id="lockDate" class="lock-date"></div>
