@@ -1,4 +1,4 @@
-// ---------- NAVIGATION ----------
+// NAV
 document.querySelectorAll('.menu').forEach(btn=>{
   btn.onclick=()=>{
     document.querySelectorAll('.menu').forEach(b=>b.classList.remove('active'));
@@ -9,122 +9,110 @@ document.querySelectorAll('.menu').forEach(btn=>{
   };
 });
 
-// ---------- CLOCK ----------
+// CLOCK
 function updateClock(){
-  const now=new Date();
+  const n=new Date();
 
-  const timeStr=now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  const dateStr=now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+  const t=n.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const d=n.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
 
-  time.textContent=timeStr;
-  date.textContent=dateStr;
-  timeSmall.textContent=timeStr;
+  time.textContent=t;
+  date.textContent=d;
+  timeSmall.textContent=t;
 
-  lockTime.textContent=timeStr;
-  lockDate.textContent=dateStr;
+  lockTime.textContent=t;
+  lockDate.textContent=d;
 
-  screenTime.textContent=timeStr;
+  screenTime.textContent=t;
 }
 setInterval(updateClock,1000);
 updateClock();
 
-// ---------- WEATHER ----------
+// WEATHER
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(async pos=>{
     try{
-      const {latitude,longitude}=pos.coords;
-      const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+      const res=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current_weather=true`);
       const data=await res.json();
 
       const w=data.current_weather;
-      weatherText.textContent=`${w.temperature}°C • Wind ${w.windspeed} km/h`;
+      const txt=`${w.temperature}°C • Wind ${w.windspeed} km/h`;
+
+      weatherText.textContent=txt;
+      weatherPreview.textContent=txt;
+
     }catch{
-      weatherText.textContent="Weather unavailable";
+      weatherText.textContent="Unavailable";
     }
-  },()=>{
-    weatherText.textContent="Location blocked";
   });
 }
 
-// ---------- REMINDERS ----------
-let reminders=JSON.parse(localStorage.getItem('reminders')||'[]');
+// REMINDERS
+let reminders=JSON.parse(localStorage.getItem('r')||'[]');
 
-function renderReminders(){
+function render(){
   reminderList.innerHTML='';
 
   reminders.forEach((r,i)=>{
     const li=document.createElement('li');
-
-    const span=document.createElement('span');
-    span.textContent=r;
-
-    const btn=document.createElement('button');
-    btn.textContent='✖';
-    btn.onclick=()=>{
-      reminders.splice(i,1);
-      localStorage.setItem('reminders',JSON.stringify(reminders));
-      renderReminders();
-    };
-
-    li.appendChild(span);
-    li.appendChild(btn);
+    li.innerHTML=`${r} <button data-i="${i}">✖</button>`;
     reminderList.appendChild(li);
   });
+
+  document.querySelectorAll('button[data-i]').forEach(btn=>{
+    btn.onclick=()=>{
+      reminders.splice(btn.dataset.i,1);
+      localStorage.setItem('r',JSON.stringify(reminders));
+      render();
+    };
+  });
+
+  reminderPreview.textContent=reminders[0]||"No reminders";
 }
-renderReminders();
+render();
 
 reminderInput.onkeypress=e=>{
   if(e.key==='Enter'){
-    if(!reminderInput.value.trim()) return;
-
     reminders.push(reminderInput.value);
-    localStorage.setItem('reminders',JSON.stringify(reminders));
+    localStorage.setItem('r',JSON.stringify(reminders));
     reminderInput.value='';
-    renderReminders();
+    render();
   }
 };
 
-// ---------- NOTES ----------
-notesArea.value=localStorage.getItem('notes')||'';
-notesArea.oninput=()=>localStorage.setItem('notes',notesArea.value);
+// NOTES
+notesArea.value=localStorage.getItem('n')||'';
+notesArea.oninput=()=>localStorage.setItem('n',notesArea.value);
 
 clearNotes.onclick=()=>{
   notesArea.value='';
-  localStorage.removeItem('notes');
+  localStorage.removeItem('n');
 };
 
-// ---------- LOCK SCREEN ----------
+// LOCK
 clockCard.onclick=()=>lockScreen.classList.remove('hidden');
 lockScreen.onclick=()=>lockScreen.classList.add('hidden');
 
-// ---------- SCREENSAVER ----------
-let idleTimer;
-let delay=parseInt(localStorage.getItem('ssTime')||2);
+// SCREENSAVER
+let delay=2;
+let timer;
 
-ssTime.value=delay;
+function reset(){
+  clearTimeout(timer);
+  screensaver.classList.add('hidden');
 
-function startIdleTimer(){
-  clearTimeout(idleTimer);
-  idleTimer=setTimeout(()=>{
+  timer=setTimeout(()=>{
     screensaver.classList.remove('hidden');
   }, delay*60000);
 }
 
-function exitScreensaver(){
-  screensaver.classList.add('hidden');
-  startIdleTimer();
-}
-
-// EXIT on ANY interaction
-['mousemove','click','touchstart','keydown'].forEach(evt=>{
-  document.addEventListener(evt, exitScreensaver);
+['mousemove','click','touchstart','keydown'].forEach(e=>{
+  document.addEventListener(e,reset);
 });
 
 ssTime.oninput=()=>{
-  delay=Math.max(1,parseInt(ssTime.value)||2);
-  localStorage.setItem('ssTime',delay);
-  startIdleTimer();
+  delay=parseInt(ssTime.value)||2;
+  reset();
 };
 
-// start
-startIdleTimer();
+reset();
