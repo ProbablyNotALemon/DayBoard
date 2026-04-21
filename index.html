@@ -11,22 +11,21 @@
 
 <div class="app">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
+  <aside class="sidebar">
     <div id="timeSmall"></div>
+
     <div class="menu active" data-page="home">Home</div>
     <div class="menu" data-page="weather">Weather</div>
     <div class="menu" data-page="reminders">Reminders</div>
     <div class="menu" data-page="notes">Notes</div>
     <div class="menu" data-page="settings">Settings</div>
-  </div>
+  </aside>
 
-  <!-- CONTENT -->
-  <div class="pages">
+  <main class="content">
 
     <!-- HOME -->
     <section class="page active" id="home">
-      <div class="clock-card" id="clockCard">
+      <div class="clock" id="clockCard">
         <div id="time"></div>
         <div id="date"></div>
       </div>
@@ -34,10 +33,9 @@
 
     <!-- WEATHER -->
     <section class="page" id="weather">
-      <div class="weather-bg" id="weatherBg"></div>
-      <div class="weather-card">
+      <div class="card">
         <h2>Weather</h2>
-        <div id="weatherBig">Loading...</div>
+        <div id="weatherText">Loading...</div>
       </div>
     </section>
 
@@ -46,7 +44,7 @@
       <div class="card">
         <h2>Reminders</h2>
         <ul id="reminderList"></ul>
-        <input id="reminderInput" placeholder="Add reminder...">
+        <input id="reminderInput" placeholder="Add reminder and press Enter">
       </div>
     </section>
 
@@ -63,13 +61,12 @@
     <section class="page" id="settings">
       <div class="card">
         <h2>Settings</h2>
-        <label>Screensaver delay (minutes)</label>
-        <input type="number" id="ssTime" value="2">
+        <label>Screen saver delay (minutes)</label>
+        <input type="number" id="ssTime" value="2" min="1" max="30">
       </div>
     </section>
 
-  </div>
-
+  </main>
 </div>
 
 <!-- LOCK SCREEN -->
