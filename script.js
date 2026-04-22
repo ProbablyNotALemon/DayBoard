@@ -11,11 +11,11 @@ const storageKeys = {
 };
 
 const elements = {
-  menus: [...document.querySelectorAll(".menu")],
-  pages: [...document.querySelectorAll(".page")],
-  time: document.getElementById("time"),
-  date: document.getElementById("date"),
-  timeSmall: document.getElementById("timeSmall"),
+  menus: Array.from(document.querySelectorAll(".menu")),
+  pages: Array.from(document.querySelectorAll(".page")),
+  time: document.getElementById("time") || document.getElementById("lockTime"),
+  date: document.getElementById("date") || document.getElementById("screenDate"),
+  timeSmall: document.getElementById("timeSmall") || document.getElementById("timeTop"),
   sidebarDateLabel: document.getElementById("sidebarDateLabel"),
   dailyGreeting: document.getElementById("dailyGreeting"),
   dayProgressValue: document.getElementById("dayProgressValue"),
@@ -26,6 +26,9 @@ const elements = {
   quoteText: document.getElementById("quoteText"),
   quoteAuthor: document.getElementById("quoteAuthor"),
   homeTitle: document.getElementById("homeTitle"),
+  heroUserName: document.getElementById("heroUserName"),
+  weatherTop: document.getElementById("weatherTop"),
+  timeTop: document.getElementById("timeTop"),
   weatherText: document.getElementById("weatherText"),
   weatherPreview: document.getElementById("weatherPreview"),
   weatherMeta: document.getElementById("weatherMeta"),
@@ -41,8 +44,9 @@ const elements = {
   clearNotes: document.getElementById("clearNotes"),
   focusInput: document.getElementById("focusInput"),
   focusPreview: document.getElementById("focusPreview"),
+  focusCardText: document.getElementById("focusCardText"),
   screensaverSummary: document.getElementById("screensaverSummary"),
-  clockCard: document.getElementById("clockCard"),
+  clockCard: document.getElementById("clockCard") || document.getElementById("timeTop"),
   lockScreen: document.getElementById("lockScreen"),
   lockTime: document.getElementById("lockTime"),
   lockDate: document.getElementById("lockDate"),
@@ -136,6 +140,24 @@ function init() {
   window.setInterval(updateClock, 1000);
 }
 
+function setText(element, value) {
+  if (element) {
+    element.textContent = value;
+  }
+}
+
+function setValue(element, value) {
+  if (element) {
+    element.value = value;
+  }
+}
+
+function on(element, eventName, handler, options) {
+  if (element) {
+    element.addEventListener(eventName, handler, options);
+  }
+}
+
 function bindNavigation() {
   elements.menus.forEach((button) => {
     button.addEventListener("click", () => setActivePage(button.dataset.page));
@@ -154,7 +176,7 @@ function setActivePage(pageId) {
 
 function bindWeatherControls() {
   [elements.refreshWeather, elements.refreshWeatherPage].forEach((button) => {
-    button.addEventListener("click", fetchWeather);
+    on(button, "click", fetchWeather);
   });
 }
 
@@ -182,17 +204,18 @@ function updateClock() {
     day: "numeric"
   });
 
-  elements.time.textContent = timeText;
-  elements.date.textContent = dateText;
-  elements.timeSmall.textContent = compactTime;
-  elements.sidebarDateLabel.textContent = shortDate;
-  elements.lockTime.textContent = timeText;
-  elements.lockDate.textContent = dateText;
-  elements.screenTime.textContent = timeText;
-  elements.screenDate.textContent = dateText;
-  elements.dailyGreeting.textContent = `${getGreeting(now)}, ${userName}`;
-  elements.dayProgressValue.textContent = `${getDayProgress(now)}%`;
-  elements.clockSubline.textContent = `${getDayName(now)} • ${getDayProgress(now)}% through the day`;
+  setText(elements.time, timeText);
+  setText(elements.date, dateText);
+  setText(elements.timeSmall, compactTime);
+  setText(elements.timeTop, compactTime);
+  setText(elements.sidebarDateLabel, shortDate);
+  setText(elements.lockTime, timeText);
+  setText(elements.lockDate, dateText);
+  setText(elements.screenTime, timeText);
+  setText(elements.screenDate, dateText);
+  setText(elements.dailyGreeting, `${getGreeting(now)}. Everything looks good today.`);
+  setText(elements.dayProgressValue, `${getDayProgress(now)}%`);
+  setText(elements.clockSubline, `${getDayName(now)} • ${getDayProgress(now)}% through the day`);
   applyTheme(now);
 }
 
@@ -233,9 +256,10 @@ function applyTheme(now = new Date()) {
   document.body.setAttribute("data-theme", resolvedTheme);
   themeClassNames.forEach((className) => document.body.classList.remove(className));
   document.body.classList.add(`theme-${resolvedTheme}`);
-  elements.themeStatus.textContent = themeMode === "auto"
-    ? `Auto: ${capitalize(resolvedTheme)}`
-    : capitalize(resolvedTheme);
+  setText(
+    elements.themeStatus,
+    themeMode === "auto" ? `Auto: ${capitalize(resolvedTheme)}` : capitalize(resolvedTheme)
+  );
 }
 
 function renderQuoteOfTheDay() {
@@ -245,8 +269,8 @@ function renderQuoteOfTheDay() {
   const day = Math.floor(diff / 86400000);
   const quote = quotes[day % quotes.length];
 
-  elements.quoteText.textContent = quote.text;
-  elements.quoteAuthor.textContent = quote.author;
+  setText(elements.quoteText, quote.text);
+  setText(elements.quoteAuthor, quote.author);
 }
 
 function getDayName(now) {
@@ -264,8 +288,8 @@ async function fetchWeather() {
     return;
   }
 
-  elements.weatherStatus.textContent = "Requesting your location permission.";
-  elements.weatherMeta.textContent = "Fetching the latest conditions.";
+  setText(elements.weatherStatus, "Requesting your location permission.");
+  setText(elements.weatherMeta, "Fetching the latest conditions.");
 
   navigator.geolocation.getCurrentPosition(
     async (position) => {
@@ -303,14 +327,15 @@ async function fetchWeather() {
 }
 
 function setWeatherState(primary, secondary, status) {
-  elements.weatherPreview.textContent = primary;
-  elements.weatherText.textContent = primary;
-  elements.weatherMeta.textContent = secondary;
-  elements.weatherStatus.textContent = status;
+  setText(elements.weatherPreview, primary);
+  setText(elements.weatherTop, primary.split(" ")[0]);
+  setText(elements.weatherText, primary);
+  setText(elements.weatherMeta, secondary);
+  setText(elements.weatherStatus, status);
 }
 
 function bindReminderInput() {
-  elements.reminderInput.addEventListener("keydown", (event) => {
+  on(elements.reminderInput, "keydown", (event) => {
     if (event.key !== "Enter") {
       return;
     }
@@ -327,12 +352,16 @@ function bindReminderInput() {
       done: false
     });
     persistReminders();
-    elements.reminderInput.value = "";
+    setValue(elements.reminderInput, "");
     renderReminders();
   });
 }
 
 function renderReminders() {
+  if (!elements.reminderList) {
+    return;
+  }
+
   elements.reminderList.innerHTML = "";
 
   if (reminders.length === 0) {
@@ -373,11 +402,12 @@ function renderReminders() {
   }
 
   const remaining = reminders.filter((item) => !item.done);
-  elements.reminderPreview.textContent = remaining.length > 0 ? remaining[0].text : "Nothing urgent right now";
-  elements.reminderCount.textContent = reminders.length
-    ? `${remaining.length} active of ${reminders.length} total`
-    : "Add one below to get started.";
-  elements.heroReminderCount.textContent = String(reminders.length);
+  setText(elements.reminderPreview, remaining.length > 0 ? remaining[0].text : "Nothing urgent right now");
+  setText(
+    elements.reminderCount,
+    reminders.length ? `${remaining.length} active of ${reminders.length} total` : "Add one below to get started."
+  );
+  setText(elements.heroReminderCount, String(reminders.length));
 }
 
 function toggleReminder(id) {
@@ -401,64 +431,72 @@ function persistReminders() {
 }
 
 function bindNotes() {
-  elements.notesArea.addEventListener("input", () => {
+  on(elements.notesArea, "input", () => {
     localStorage.setItem(storageKeys.notes, elements.notesArea.value);
     renderNotesPreview();
   });
 
-  elements.clearNotes.addEventListener("click", () => {
-    elements.notesArea.value = "";
+  on(elements.clearNotes, "click", () => {
+    setValue(elements.notesArea, "");
     localStorage.removeItem(storageKeys.notes);
     renderNotesPreview();
   });
 }
 
 function restoreNotes() {
-  elements.notesArea.value = localStorage.getItem(storageKeys.notes) || "";
+  setValue(elements.notesArea, localStorage.getItem(storageKeys.notes) || "");
 }
 
 function renderNotesPreview() {
+  if (!elements.notesArea) {
+    return;
+  }
   const note = elements.notesArea.value.trim();
-  elements.notesPreview.textContent = note
-    ? `${note.slice(0, 180)}${note.length > 180 ? "..." : ""}`
-    : "Your latest notes will appear here.";
-  elements.notesLength.textContent = `${note.length} chars`;
+  setText(
+    elements.notesPreview,
+    note ? `${note.slice(0, 180)}${note.length > 180 ? "..." : ""}` : "Your latest notes will appear here."
+  );
+  setText(elements.notesLength, `${note.length} chars`);
 }
 
 function bindFocus() {
-  elements.focusInput.addEventListener("input", () => {
+  on(elements.focusInput, "input", () => {
     localStorage.setItem(storageKeys.focus, elements.focusInput.value.trim());
     renderFocus();
   });
 }
 
 function restoreFocus() {
-  elements.focusInput.value = localStorage.getItem(storageKeys.focus) || "";
+  setValue(elements.focusInput, localStorage.getItem(storageKeys.focus) || "");
 }
 
 function renderFocus() {
+  if (!elements.focusInput) {
+    return;
+  }
   const focus = elements.focusInput.value.trim();
   const focusText = focus || "Set a short intention for the day.";
-  elements.focusPreview.textContent = focusText;
-  elements.lockFocus.textContent = focus ? `Focus: ${focus}` : "Tap anywhere to return to your board.";
-  elements.screenFocus.textContent = focus ? `Today's focus: ${focus}` : "A softer view for quiet moments.";
+  setText(elements.focusPreview, focusText);
+  setText(elements.focusCardText, focusText);
+  setText(elements.lockFocus, focus ? `Focus: ${focus}` : "Tap anywhere to return to your board.");
+  setText(elements.screenFocus, focus ? `Today's focus: ${focus}` : "A softer view for quiet moments.");
 }
 
 function bindOverlayControls() {
-  elements.clockCard.addEventListener("click", () => {
+  on(elements.clockCard, "click", () => {
     elements.lockScreen.classList.remove("hidden");
     elements.screensaver.classList.add("hidden");
   });
 
-  elements.lockScreen.addEventListener("click", () => {
+  on(elements.lockScreen, "click", () => {
     elements.lockScreen.classList.add("hidden");
   });
 }
 
 function bindScreensaverControls() {
-  elements.ssTime.value = String(screensaverDelay);
+  setValue(elements.ssTime, String(screensaverDelay));
 
-  elements.ssTime.addEventListener("input", () => {
+  on(elements.ssTime, "input", () => {
     screensaverDelay = loadNumber(elements.ssTime.value, 2, 1, 30);
     localStorage.setItem(storageKeys.screensaverDelay, String(screensaverDelay));
     updateScreensaverUI();
@@ -471,21 +509,21 @@ function bindScreensaverControls() {
 }
 
 function bindPreferenceToggles() {
-  elements.clockSecondsToggle.addEventListener("click", () => {
+  on(elements.clockSecondsToggle, "click", () => {
     showSeconds = !showSeconds;
     localStorage.setItem(storageKeys.showSeconds, String(showSeconds));
     updatePreferenceToggles();
     updateClock();
   });
 
-  elements.twentyFourToggle.addEventListener("click", () => {
+  on(elements.twentyFourToggle, "click", () => {
     use24Hour = !use24Hour;
     localStorage.setItem(storageKeys.use24Hour, String(use24Hour));
     updatePreferenceToggles();
     updateClock();
   });
 
-  elements.themeMode.addEventListener("change", () => {
+  on(elements.themeMode, "change", () => {
     themeMode = elements.themeMode.value;
     localStorage.setItem(storageKeys.themeMode, themeMode);
     applyTheme();
@@ -493,7 +531,7 @@ function bindPreferenceToggles() {
 }
 
 function bindNameSettings() {
-  elements.userNameInput.addEventListener("input", () => {
+  on(elements.userNameInput, "input", () => {
     userName = elements.userNameInput.value.trim() || "John";
     localStorage.setItem(storageKeys.userName, userName);
     renderUserName();
@@ -502,14 +540,14 @@ function bindNameSettings() {
 }
 
 function restoreName() {
-  elements.userNameInput.value = userName;
+  setValue(elements.userNameInput, userName);
   renderUserName();
 }
 
 function bindSetupFlow() {
   syncSetupForm();
 
-  elements.completeSetup.addEventListener("click", () => {
+  on(elements.completeSetup, "click", () => {
     userName = elements.setupNameInput.value.trim() || "John";
     themeMode = elements.setupThemeMode.value;
     hasCompletedSetup = true;
@@ -518,8 +556,8 @@ function bindSetupFlow() {
     localStorage.setItem(storageKeys.themeMode, themeMode);
     localStorage.setItem(storageKeys.hasCompletedSetup, "true");
 
-    elements.userNameInput.value = userName;
-    elements.themeMode.value = themeMode;
+    setValue(elements.userNameInput, userName);
+    setValue(elements.themeMode, themeMode);
     renderUserName();
     updatePreferenceToggles();
     applyTheme();
@@ -530,18 +568,22 @@ function bindSetupFlow() {
 
 function updateSetupVisibility() {
   if (hasCompletedSetup) {
-    elements.setupScreen.classList.add("hidden");
+    if (elements.setupScreen) {
+      elements.setupScreen.classList.add("hidden");
+    }
     document.body.classList.remove("setup-open");
     return;
   }
 
   syncSetupForm();
-  elements.setupScreen.classList.remove("hidden");
+  if (elements.setupScreen) {
+    elements.setupScreen.classList.remove("hidden");
+  }
   document.body.classList.add("setup-open");
 }
 
 function bindResetAction() {
-  elements.resetApp.addEventListener("click", () => {
+  on(elements.resetApp, "click", () => {
     const shouldReset = window.confirm("Reset DayBoard? This clears your name, reminders, notes, settings, and all saved data for this app.");
 
     if (!shouldReset) {
@@ -555,18 +597,22 @@ function bindResetAction() {
 }
 
 function updatePreferenceToggles() {
-  setToggleState(elements.clockSecondsToggle, showSeconds);
-  setToggleState(elements.twentyFourToggle, use24Hour);
-  elements.themeMode.value = themeMode;
+  if (elements.clockSecondsToggle) {
+    setToggleState(elements.clockSecondsToggle, showSeconds);
+  }
+  if (elements.twentyFourToggle) {
+    setToggleState(elements.twentyFourToggle, use24Hour);
+  }
+  setValue(elements.themeMode, themeMode);
 }
 
 function renderUserName() {
-  elements.homeTitle.textContent = `Hi, ${userName}. Ready for a calmer day?`;
+  setText(elements.heroUserName, userName);
 }
 
 function syncSetupForm() {
-  elements.setupNameInput.value = userName;
-  elements.setupThemeMode.value = themeMode;
+  setValue(elements.setupNameInput, userName);
+  setValue(elements.setupThemeMode, themeMode);
 }
 
 function setToggleState(button, isOn) {
@@ -576,8 +622,8 @@ function setToggleState(button, isOn) {
 }
 
 function updateScreensaverUI() {
-  elements.ssValue.textContent = `${screensaverDelay} min`;
-  elements.screensaverSummary.textContent = `Soft light motion after ${screensaverDelay} minute${screensaverDelay === 1 ? "" : "s"} of inactivity.`;
+  setText(elements.ssValue, `${screensaverDelay} min`);
+  setText(elements.screensaverSummary, `Soft light motion after ${screensaverDelay} minute${screensaverDelay === 1 ? "" : "s"} of inactivity.`);
 }
 
 function resetScreensaverTimer() {
