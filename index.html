@@ -48,7 +48,7 @@
         </nav>
 
         <div class="sidebar-footer">
-          <p class="sidebar-footer-label">Today</p>
+          <p class="sidebar-footer-label">Welcome back</p>
           <p id="dailyGreeting" class="sidebar-footer-value"></p>
         </div>
       </aside>
@@ -58,8 +58,8 @@
           <header class="hero-panel">
             <div class="hero-copy">
               <p class="eyebrow">Designed for focus</p>
-              <h1 id="homeTitle">A calmer dashboard for your iPad.</h1>
-              <p class="hero-text">Time, weather, reminders, notes, and a few thoughtful extras arranged for the iPad Air 2 in landscape and portrait.</p>
+              <h1 id="homeTitle">Hi, Viggo. Ready for a calmer day?</h1>
+              <p class="hero-text">A sleek iPad Air 2 dashboard with time, weather, reminders, notes, and ambient details that shift with the time of day.</p>
 
               <div class="hero-metrics" aria-label="Day metrics">
                 <article class="metric-pill">
@@ -73,6 +73,10 @@
                 <article class="metric-pill">
                   <span class="metric-label">Notes</span>
                   <strong id="notesLength" class="metric-value">0 chars</strong>
+                </article>
+                <article class="metric-pill">
+                  <span class="metric-label">Theme</span>
+                  <strong id="themeStatus" class="metric-value">Auto</strong>
                 </article>
               </div>
             </div>
@@ -89,7 +93,16 @@
           </header>
 
           <section class="home-grid" aria-label="Overview">
-            <article class="card weather-card">
+            <article class="card quote-card wide-card">
+              <div class="card-header">
+                <p class="eyebrow">Quote of the day</p>
+                <h2>Daily perspective</h2>
+              </div>
+              <p id="quoteText" class="quote-text">Loading quote...</p>
+              <p id="quoteAuthor" class="card-meta">DayBoard</p>
+            </article>
+
+            <article class="card weather-card home-span-4">
               <div class="card-header">
                 <p class="eyebrow">Live weather</p>
                 <h2>Forecast</h2>
@@ -99,7 +112,7 @@
               <button id="refreshWeather" class="ghost-button" type="button">Refresh weather</button>
             </article>
 
-            <article class="card">
+            <article class="card home-span-4">
               <div class="card-header">
                 <p class="eyebrow">Up next</p>
                 <h2>Reminders</h2>
@@ -108,7 +121,7 @@
               <p id="reminderCount" class="card-meta">Add one below to get started.</p>
             </article>
 
-            <article class="card">
+            <article class="card home-span-4">
               <div class="card-header">
                 <p class="eyebrow">Daily focus</p>
                 <h2>Intention</h2>
@@ -118,7 +131,7 @@
               <p id="focusPreview" class="card-meta">Set a short intention for the day.</p>
             </article>
 
-            <article class="card wide-card">
+            <article class="card notes-card">
               <div class="card-header">
                 <p class="eyebrow">Quick capture</p>
                 <h2>Notes snapshot</h2>
@@ -126,7 +139,7 @@
               <p id="notesPreview" class="card-copy">Your latest notes will appear here.</p>
             </article>
 
-            <article class="card">
+            <article class="card home-span-4">
               <div class="card-header">
                 <p class="eyebrow">Atmosphere</p>
                 <h2>Screen saver</h2>
@@ -185,6 +198,9 @@
               <h2 id="settingsTitle">Settings</h2>
             </div>
 
+            <label class="field-label" for="userNameInput">Name</label>
+            <input id="userNameInput" type="text" maxlength="40" placeholder="Enter your name">
+
             <label class="field-label" for="ssTime">Screen saver delay</label>
             <div class="settings-row">
               <input type="range" id="ssTime" value="2" min="1" max="30">
@@ -203,10 +219,50 @@
               <button id="twentyFourToggle" class="toggle-button" type="button" aria-pressed="false">Off</button>
             </div>
 
+            <label class="field-label" for="themeMode">Theme</label>
+            <div class="settings-row">
+              <select id="themeMode" class="select-input">
+                <option value="auto">Auto by time of day</option>
+                <option value="dawn">Dawn</option>
+                <option value="day">Day</option>
+                <option value="sunset">Sunset</option>
+                <option value="night">Night</option>
+              </select>
+              <span class="settings-value">Visual mood</span>
+            </div>
+
+            <div class="actions">
+              <button id="resetApp" class="danger-button" type="button">Reset DayBoard</button>
+            </div>
+
             <p class="card-meta">Built for the iPad Air 2 with roomy touch targets and a cleaner full-screen experience.</p>
           </article>
         </section>
       </main>
+    </div>
+  </div>
+
+  <div id="setupScreen" class="overlay setup hidden" role="dialog" aria-modal="true" aria-label="Welcome setup">
+    <div class="overlay-panel setup-panel">
+      <p class="eyebrow overlay-eyebrow">Welcome to DayBoard</p>
+      <h2 class="setup-title">Let’s make this board yours.</h2>
+      <p class="setup-copy">Choose your name and preferred look. You can change all of this later in Settings.</p>
+
+      <label class="field-label" for="setupNameInput">Your name</label>
+      <input id="setupNameInput" type="text" maxlength="40" placeholder="John">
+
+      <label class="field-label" for="setupThemeMode">Theme</label>
+      <select id="setupThemeMode" class="select-input">
+        <option value="auto">Auto by time of day</option>
+        <option value="dawn">Dawn</option>
+        <option value="day">Day</option>
+        <option value="sunset">Sunset</option>
+        <option value="night">Night</option>
+      </select>
+
+      <div class="actions">
+        <button id="completeSetup" class="secondary-button" type="button">Start DayBoard</button>
+      </div>
     </div>
   </div>
 

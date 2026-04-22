@@ -4,7 +4,10 @@ const storageKeys = {
   screensaverDelay: "dayboard.screensaverDelay",
   focus: "dayboard.focus",
   showSeconds: "dayboard.showSeconds",
-  use24Hour: "dayboard.use24Hour"
+  use24Hour: "dayboard.use24Hour",
+  themeMode: "dayboard.themeMode",
+  userName: "dayboard.userName",
+  hasCompletedSetup: "dayboard.hasCompletedSetup"
 };
 
 const elements = {
@@ -18,7 +21,11 @@ const elements = {
   dayProgressValue: document.getElementById("dayProgressValue"),
   heroReminderCount: document.getElementById("heroReminderCount"),
   notesLength: document.getElementById("notesLength"),
+  themeStatus: document.getElementById("themeStatus"),
   clockSubline: document.getElementById("clockSubline"),
+  quoteText: document.getElementById("quoteText"),
+  quoteAuthor: document.getElementById("quoteAuthor"),
+  homeTitle: document.getElementById("homeTitle"),
   weatherText: document.getElementById("weatherText"),
   weatherPreview: document.getElementById("weatherPreview"),
   weatherMeta: document.getElementById("weatherMeta"),
@@ -47,8 +54,25 @@ const elements = {
   ssTime: document.getElementById("ssTime"),
   ssValue: document.getElementById("ssValue"),
   clockSecondsToggle: document.getElementById("clockSecondsToggle"),
-  twentyFourToggle: document.getElementById("twentyFourToggle")
+  twentyFourToggle: document.getElementById("twentyFourToggle"),
+  themeMode: document.getElementById("themeMode"),
+  userNameInput: document.getElementById("userNameInput"),
+  resetApp: document.getElementById("resetApp"),
+  setupScreen: document.getElementById("setupScreen"),
+  setupNameInput: document.getElementById("setupNameInput"),
+  setupThemeMode: document.getElementById("setupThemeMode"),
+  completeSetup: document.getElementById("completeSetup")
 };
+
+const quotes = [
+  { text: "Small steps still count as forward motion.", author: "DayBoard" },
+  { text: "Make the next good choice, then another.", author: "DayBoard" },
+  { text: "A calm plan beats a rushed reaction.", author: "DayBoard" },
+  { text: "Protect your attention and the day improves with it.", author: "DayBoard" },
+  { text: "Leave space in the day for what matters most.", author: "DayBoard" },
+  { text: "Clarity grows when the noise gets quieter.", author: "DayBoard" },
+  { text: "Finish one meaningful thing before chasing five more.", author: "DayBoard" }
+];
 
 const weatherDescriptions = {
   0: "Clear sky",
@@ -76,6 +100,9 @@ let reminders = loadStoredReminders();
 let screensaverDelay = loadStoredNumber(storageKeys.screensaverDelay, 2, 1, 30);
 let showSeconds = loadStoredBoolean(storageKeys.showSeconds, false);
 let use24Hour = loadStoredBoolean(storageKeys.use24Hour, false);
+let themeMode = localStorage.getItem(storageKeys.themeMode) || "auto";
+let userName = localStorage.getItem(storageKeys.userName) || "John";
+let hasCompletedSetup = loadStoredBoolean(storageKeys.hasCompletedSetup, false);
 let screensaverTimer;
 
 init();
@@ -89,16 +116,22 @@ function init() {
   bindOverlayControls();
   bindScreensaverControls();
   bindPreferenceToggles();
+  bindNameSettings();
+  bindSetupFlow();
+  bindResetAction();
   restoreNotes();
   restoreFocus();
+  restoreName();
   renderReminders();
   renderNotesPreview();
   renderFocus();
+  renderQuoteOfTheDay();
   updatePreferenceToggles();
   updateScreensaverUI();
   updateClock();
   fetchWeather();
   resetScreensaverTimer();
+  updateSetupVisibility();
   window.setInterval(updateClock, 1000);
 }
 
@@ -156,9 +189,10 @@ function updateClock() {
   elements.lockDate.textContent = dateText;
   elements.screenTime.textContent = timeText;
   elements.screenDate.textContent = dateText;
-  elements.dailyGreeting.textContent = getGreeting(now);
+  elements.dailyGreeting.textContent = `${getGreeting(now)}, ${userName}`;
   elements.dayProgressValue.textContent = `${getDayProgress(now)}%`;
   elements.clockSubline.textContent = `${getDayName(now)} • ${getDayProgress(now)}% through the day`;
+  applyTheme(now);
 }
 
 function getGreeting(now) {
@@ -173,6 +207,43 @@ function getGreeting(now) {
   }
 
   return "Good evening";
+}
+
+function getAutoTheme(now) {
+  const hour = now.getHours();
+
+  if (hour >= 5 && hour < 10) {
+    return "dawn";
+  }
+
+  if (hour >= 10 && hour < 17) {
+    return "day";
+  }
+
+  if (hour >= 17 && hour < 21) {
+    return "sunset";
+  }
+
+  return "night";
+}
+
+function applyTheme(now = new Date()) {
+  const resolvedTheme = themeMode === "auto" ? getAutoTheme(now) : themeMode;
+  document.body.dataset.theme = resolvedTheme;
+  elements.themeStatus.textContent = themeMode === "auto"
+    ? `Auto: ${capitalize(resolvedTheme)}`
+    : capitalize(resolvedTheme);
+}
+
+function renderQuoteOfTheDay() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start;
+  const day = Math.floor(diff / 86400000);
+  const quote = quotes[day % quotes.length];
+
+  elements.quoteText.textContent = quote.text;
+  elements.quoteAuthor.textContent = quote.author;
 }
 
 function getDayName(now) {
@@ -410,11 +481,76 @@ function bindPreferenceToggles() {
     updatePreferenceToggles();
     updateClock();
   });
+
+  elements.themeMode.addEventListener("change", () => {
+    themeMode = elements.themeMode.value;
+    localStorage.setItem(storageKeys.themeMode, themeMode);
+    applyTheme();
+  });
+}
+
+function bindNameSettings() {
+  elements.userNameInput.addEventListener("input", () => {
+    userName = elements.userNameInput.value.trim() || "John";
+    localStorage.setItem(storageKeys.userName, userName);
+    renderUserName();
+    updateClock();
+  });
+}
+
+function restoreName() {
+  elements.userNameInput.value = userName;
+  renderUserName();
+}
+
+function bindSetupFlow() {
+  elements.setupThemeMode.value = themeMode;
+  elements.setupNameInput.value = userName;
+
+  elements.completeSetup.addEventListener("click", () => {
+    userName = elements.setupNameInput.value.trim() || "John";
+    themeMode = elements.setupThemeMode.value;
+    hasCompletedSetup = true;
+
+    localStorage.setItem(storageKeys.userName, userName);
+    localStorage.setItem(storageKeys.themeMode, themeMode);
+    localStorage.setItem(storageKeys.hasCompletedSetup, "true");
+
+    elements.userNameInput.value = userName;
+    elements.themeMode.value = themeMode;
+    renderUserName();
+    updatePreferenceToggles();
+    applyTheme();
+    updateClock();
+    updateSetupVisibility();
+  });
+}
+
+function updateSetupVisibility() {
+  elements.setupScreen.classList.toggle("hidden", hasCompletedSetup);
+}
+
+function bindResetAction() {
+  elements.resetApp.addEventListener("click", () => {
+    const shouldReset = window.confirm("Reset DayBoard? This clears your name, reminders, notes, settings, and all saved data for this app.");
+
+    if (!shouldReset) {
+      return;
+    }
+
+    Object.values(storageKeys).forEach((key) => localStorage.removeItem(key));
+    window.location.reload();
+  });
 }
 
 function updatePreferenceToggles() {
   setToggleState(elements.clockSecondsToggle, showSeconds);
   setToggleState(elements.twentyFourToggle, use24Hour);
+  elements.themeMode.value = themeMode;
+}
+
+function renderUserName() {
+  elements.homeTitle.textContent = `Hi, ${userName}. Ready for a calmer day?`;
 }
 
 function setToggleState(button, isOn) {
@@ -494,4 +630,8 @@ function loadNumber(value, fallback, min, max) {
   }
 
   return Math.min(Math.max(parsed, min), max);
+}
+
+function capitalize(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
