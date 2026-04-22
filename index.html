@@ -2,25 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#f3ede2">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#eef2f7">
 <title>DayBoard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./style.css?v=2">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css?v=3">
 </head>
 <body>
   <div class="app-shell">
     <div class="backdrop backdrop-one" aria-hidden="true"></div>
     <div class="backdrop backdrop-two" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
 
     <div class="app">
       <aside class="sidebar" aria-label="Primary">
         <div class="sidebar-top">
           <p class="eyebrow">DayBoard</p>
           <div id="timeSmall" class="sidebar-time"></div>
-          <p class="sidebar-date-label">Your calm daily board</p>
+          <p id="sidebarDateLabel" class="sidebar-date-label"></p>
         </div>
 
         <nav class="menu-list">
@@ -38,39 +39,64 @@
           </button>
           <button class="menu" data-page="notes" type="button">
             <span class="menu-label">Notes</span>
-            <span class="menu-hint">Capture ideas</span>
+            <span class="menu-hint">Capture</span>
           </button>
           <button class="menu" data-page="settings" type="button">
             <span class="menu-label">Settings</span>
             <span class="menu-hint">Personalize</span>
           </button>
         </nav>
+
+        <div class="sidebar-footer">
+          <p class="sidebar-footer-label">Today</p>
+          <p id="dailyGreeting" class="sidebar-footer-value"></p>
+        </div>
       </aside>
 
       <main class="content">
         <section class="page active" id="home" aria-labelledby="homeTitle">
           <header class="hero-panel">
             <div class="hero-copy">
-              <p class="eyebrow">Today</p>
-              <h1 id="homeTitle">Everything you need, at a glance.</h1>
-              <p class="hero-text">A lightweight dashboard for the time, weather, reminders, and quick thoughts that matter most.</p>
+              <p class="eyebrow">Designed for focus</p>
+              <h1 id="homeTitle">A calmer dashboard for your iPad.</h1>
+              <p class="hero-text">Time, weather, reminders, notes, and a few thoughtful extras arranged for the iPad Air 2 in landscape and portrait.</p>
+
+              <div class="hero-metrics" aria-label="Day metrics">
+                <article class="metric-pill">
+                  <span class="metric-label">Day progress</span>
+                  <strong id="dayProgressValue" class="metric-value">0%</strong>
+                </article>
+                <article class="metric-pill">
+                  <span class="metric-label">Saved reminders</span>
+                  <strong id="heroReminderCount" class="metric-value">0</strong>
+                </article>
+                <article class="metric-pill">
+                  <span class="metric-label">Notes</span>
+                  <strong id="notesLength" class="metric-value">0 chars</strong>
+                </article>
+              </div>
             </div>
 
-            <button class="clock-card" id="clockCard" type="button" aria-label="Open lock screen">
+            <button class="clock-card" id="clockCard" type="button" aria-label="Open full screen clock">
+              <p class="eyebrow">Clock</p>
               <div id="time" class="hero-time"></div>
               <div id="date" class="hero-date"></div>
-              <span class="clock-cta">Tap for lock view</span>
+              <div class="clock-foot">
+                <span id="clockSubline" class="clock-subline"></span>
+                <span class="clock-cta">Tap for full screen</span>
+              </div>
             </button>
           </header>
 
-          <section class="summary-grid" aria-label="Summary">
-            <article class="card accent-card">
+          <section class="home-grid" aria-label="Overview">
+            <article class="card weather-card">
               <div class="card-header">
                 <p class="eyebrow">Live weather</p>
                 <h2>Forecast</h2>
               </div>
               <p id="weatherPreview" class="card-value">Loading weather...</p>
               <p id="weatherMeta" class="card-meta">Waiting for location permission.</p>
+              <button id="refreshWeather" class="ghost-button" type="button">Refresh weather</button>
             </article>
 
             <article class="card">
@@ -82,12 +108,30 @@
               <p id="reminderCount" class="card-meta">Add one below to get started.</p>
             </article>
 
-            <article class="card notes-preview-card">
+            <article class="card">
+              <div class="card-header">
+                <p class="eyebrow">Daily focus</p>
+                <h2>Intention</h2>
+              </div>
+              <label class="sr-only" for="focusInput">Daily focus</label>
+              <input id="focusInput" type="text" maxlength="80" placeholder="What matters most today?">
+              <p id="focusPreview" class="card-meta">Set a short intention for the day.</p>
+            </article>
+
+            <article class="card wide-card">
               <div class="card-header">
                 <p class="eyebrow">Quick capture</p>
                 <h2>Notes snapshot</h2>
               </div>
               <p id="notesPreview" class="card-copy">Your latest notes will appear here.</p>
+            </article>
+
+            <article class="card">
+              <div class="card-header">
+                <p class="eyebrow">Atmosphere</p>
+                <h2>Screen saver</h2>
+              </div>
+              <p id="screensaverSummary" class="card-copy">Soft light motion after 2 minutes of inactivity.</p>
             </article>
           </section>
         </section>
@@ -100,6 +144,9 @@
             </div>
             <p id="weatherText" class="page-lead">Loading weather...</p>
             <p id="weatherStatus" class="card-meta">We use your current location for a local forecast.</p>
+            <div class="inline-actions">
+              <button id="refreshWeatherPage" class="ghost-button" type="button">Refresh weather</button>
+            </div>
           </article>
         </section>
 
@@ -143,30 +190,50 @@
               <input type="range" id="ssTime" value="2" min="1" max="30">
               <span id="ssValue" class="settings-value">2 min</span>
             </div>
-            <p class="card-meta">The screen saver appears after inactivity. Touch anywhere to return.</p>
+
+            <label class="field-label" for="clockSecondsToggle">Clock detail</label>
+            <div class="toggle-row">
+              <span>Show seconds on main clock</span>
+              <button id="clockSecondsToggle" class="toggle-button" type="button" aria-pressed="false">Off</button>
+            </div>
+
+            <label class="field-label" for="twentyFourToggle">Time format</label>
+            <div class="toggle-row">
+              <span>Use 24-hour time</span>
+              <button id="twentyFourToggle" class="toggle-button" type="button" aria-pressed="false">Off</button>
+            </div>
+
+            <p class="card-meta">Built for the iPad Air 2 with roomy touch targets and a cleaner full-screen experience.</p>
           </article>
         </section>
       </main>
     </div>
   </div>
 
-  <div id="lockScreen" class="overlay lock hidden" role="dialog" aria-modal="true" aria-label="Lock screen">
-    <div class="overlay-panel">
+  <div id="lockScreen" class="overlay lock hidden" role="dialog" aria-modal="true" aria-label="Full screen clock">
+    <div class="overlay-sheen" aria-hidden="true"></div>
+    <div class="overlay-panel overlay-panel-full">
+      <p class="eyebrow overlay-eyebrow">DayBoard</p>
       <div id="lockTime" class="overlay-time"></div>
       <div id="lockDate" class="overlay-date"></div>
-      <p class="overlay-hint">Tap anywhere to unlock</p>
+      <p id="lockFocus" class="overlay-focus"></p>
+      <p class="overlay-hint">Tap anywhere to close</p>
     </div>
   </div>
 
   <div id="screensaver" class="overlay screensaver hidden" aria-hidden="true">
     <div class="glow glow-one"></div>
     <div class="glow glow-two"></div>
-    <div class="overlay-panel">
+    <div class="glow glow-three"></div>
+    <div class="overlay-panel overlay-panel-full">
+      <p class="eyebrow overlay-eyebrow">Ambient mode</p>
       <div id="screenTime" class="overlay-time"></div>
+      <div id="screenDate" class="overlay-date"></div>
+      <p id="screenFocus" class="overlay-focus"></p>
       <p class="overlay-hint">Move, touch, or press a key to return</p>
     </div>
   </div>
 
-  <script src="script.js?v=2"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>
