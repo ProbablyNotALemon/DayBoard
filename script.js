@@ -104,6 +104,7 @@ let themeMode = localStorage.getItem(storageKeys.themeMode) || "auto";
 let userName = localStorage.getItem(storageKeys.userName) || "John";
 let hasCompletedSetup = loadStoredBoolean(storageKeys.hasCompletedSetup, false);
 let screensaverTimer;
+const themeClassNames = ["theme-dawn", "theme-day", "theme-sunset", "theme-night"];
 
 init();
 
@@ -229,7 +230,9 @@ function getAutoTheme(now) {
 
 function applyTheme(now = new Date()) {
   const resolvedTheme = themeMode === "auto" ? getAutoTheme(now) : themeMode;
-  document.body.dataset.theme = resolvedTheme;
+  document.body.setAttribute("data-theme", resolvedTheme);
+  themeClassNames.forEach((className) => document.body.classList.remove(className));
+  document.body.classList.add(`theme-${resolvedTheme}`);
   elements.themeStatus.textContent = themeMode === "auto"
     ? `Auto: ${capitalize(resolvedTheme)}`
     : capitalize(resolvedTheme);
@@ -319,7 +322,7 @@ function bindReminderInput() {
     }
 
     reminders.unshift({
-      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      id: createId(),
       text: value,
       done: false
     });
@@ -370,7 +373,7 @@ function renderReminders() {
   }
 
   const remaining = reminders.filter((item) => !item.done);
-  elements.reminderPreview.textContent = remaining[0]?.text || "Nothing urgent right now";
+  elements.reminderPreview.textContent = remaining.length > 0 ? remaining[0].text : "Nothing urgent right now";
   elements.reminderCount.textContent = reminders.length
     ? `${remaining.length} active of ${reminders.length} total`
     : "Add one below to get started.";
@@ -504,8 +507,7 @@ function restoreName() {
 }
 
 function bindSetupFlow() {
-  elements.setupThemeMode.value = themeMode;
-  elements.setupNameInput.value = userName;
+  syncSetupForm();
 
   elements.completeSetup.addEventListener("click", () => {
     userName = elements.setupNameInput.value.trim() || "John";
@@ -527,7 +529,15 @@ function bindSetupFlow() {
 }
 
 function updateSetupVisibility() {
-  elements.setupScreen.classList.toggle("hidden", hasCompletedSetup);
+  if (hasCompletedSetup) {
+    elements.setupScreen.classList.add("hidden");
+    document.body.classList.remove("setup-open");
+    return;
+  }
+
+  syncSetupForm();
+  elements.setupScreen.classList.remove("hidden");
+  document.body.classList.add("setup-open");
 }
 
 function bindResetAction() {
@@ -539,6 +549,7 @@ function bindResetAction() {
     }
 
     Object.values(storageKeys).forEach((key) => localStorage.removeItem(key));
+    hasCompletedSetup = false;
     window.location.reload();
   });
 }
@@ -551,6 +562,11 @@ function updatePreferenceToggles() {
 
 function renderUserName() {
   elements.homeTitle.textContent = `Hi, ${userName}. Ready for a calmer day?`;
+}
+
+function syncSetupForm() {
+  elements.setupNameInput.value = userName;
+  elements.setupThemeMode.value = themeMode;
 }
 
 function setToggleState(button, isOn) {
@@ -586,7 +602,7 @@ function loadStoredReminders() {
       .map((item) => {
         if (typeof item === "string") {
           return {
-            id: crypto.randomUUID ? crypto.randomUUID() : `${item}-${Date.now()}`,
+            id: createId(),
             text: item,
             done: false
           };
@@ -594,7 +610,7 @@ function loadStoredReminders() {
 
         if (item && typeof item.text === "string") {
           return {
-            id: item.id || (crypto.randomUUID ? crypto.randomUUID() : `${item.text}-${Date.now()}`),
+            id: item.id || createId(),
             text: item.text,
             done: Boolean(item.done)
           };
@@ -634,4 +650,8 @@ function loadNumber(value, fallback, min, max) {
 
 function capitalize(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function createId() {
+  return `id-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 }
